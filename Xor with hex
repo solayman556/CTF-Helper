@@ -1,0 +1,30 @@
+import string
+
+filename = input("Enter file name: ").strip()
+output_file = "result.txt"
+
+with open(filename, "r") as f:
+    hex_data = f.read().strip()
+
+data = bytes.fromhex(hex_data)
+
+printable = set(bytes(string.printable, "ascii"))
+
+with open(output_file, "w", encoding="utf-8") as out_file:
+
+    for key in range(1, 256):
+        out = bytes(b ^ key for b in data)
+
+        score = sum(1 for b in out if b in printable) / len(out)
+
+        result_text = (
+            f"\nKEY: {key}\n"
+            f"SCORE: {round(score, 3)}\n"
+            f"{out.decode('utf-8', errors='ignore')}\n"
+            + "-" * 50 + "\n"
+        )
+
+        print(result_text)
+        out_file.write(result_text)
+
+print(f"\n[+] Saved results to {output_file}")
